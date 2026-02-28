@@ -1,0 +1,5 @@
+{
+  "name": "IESTI Monte Carlo Pro",
+  "description": "Herramienta avanzada de evaluación probabilística de riesgo agudo según estándares FAO/WHO 2014, utilizando simulaciones de Monte Carlo para análisis toxicológico.",
+  "requestFramePermissions": []
+}
