@@ -60,6 +60,7 @@ export const runMonteCarlo = (params: SimulationParams): SimulationResult => {
     mean: iestiValues.reduce((a, b) => a + b, 0) / n,
     median: sortedValues[Math.floor(n / 2)],
     p95: sortedValues[Math.floor(n * 0.95)],
+    p975: sortedValues[Math.floor(n * 0.975)],
     p99: sortedValues[Math.floor(n * 0.99)],
     probExceed: (countExceed / n) * 100,
     countExceed,

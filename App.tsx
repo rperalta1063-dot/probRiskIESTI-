@@ -312,6 +312,7 @@ const App: React.FC = () => {
     const stats = [
       [t.meanIesti, `${results.stats.mean.toFixed(6)} mg/kg`],
       [t.p95, `${results.stats.p95.toFixed(6)} mg/kg`],
+      [t.p975, `${results.stats.p975.toFixed(6)} mg/kg`],
       [t.p99, `${results.stats.p99.toFixed(6)} mg/kg`],
       [t.probExceed, `${results.stats.probExceed.toFixed(2)}%`],
       [t.toxicity, `${params.arfd} mg/kg`]
@@ -827,9 +828,10 @@ const App: React.FC = () => {
               <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
                 
                 {/* Stats Summary */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                   <StatsCard label={params.mode === 'deterministic' ? t.iestiPunctual : t.meanIesti} value={results!.stats.mean.toFixed(5)} unit="mg/kg" icon={<TrendingUp className="w-4 h-4" />} />
                   <StatsCard label={t.p95} value={results!.stats.p95.toFixed(5)} unit="mg/kg" icon={<BarChart3 className="w-4 h-4" />} />
+                  <StatsCard label={t.p975} value={results!.stats.p975.toFixed(5)} unit="mg/kg" icon={<BarChart3 className="w-4 h-4" />} />
                   <StatsCard label={t.p99} value={results!.stats.p99.toFixed(5)} unit="mg/kg" icon={<Activity className="w-4 h-4" />} />
                   <StatsCard label={t.probExceed} value={results!.stats.probExceed.toFixed(2)} unit="%" icon={<AlertTriangle className="w-4 h-4" />} />
                 </div>

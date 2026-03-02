@@ -55,6 +55,7 @@ export interface SimulationResult {
     mean: number;
     median: number;
     p95: number;
+    p975: number;
     p99: number;
     probExceed: number;
     countExceed: number;
