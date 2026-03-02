@@ -417,78 +417,182 @@ const App: React.FC = () => {
   const renderCharts = () => {
     if (!results) return;
     const data = results.data.map(d => d.iesti);
+    const isDark = darkMode;
+    const gridColor = isDark ? '#334155' : '#f1f5f9';
+    const textColor = isDark ? '#94a3b8' : '#64748b';
+    const titleColor = isDark ? '#f1f5f9' : '#1e293b';
+
     const layoutBase = {
       paper_bgcolor: 'rgba(0,0,0,0)',
       plot_bgcolor: 'rgba(0,0,0,0)',
-      margin: { t: 30, r: 30, b: 50, l: 60 },
-      font: { family: 'Inter, sans-serif' },
-      xaxis: { gridcolor: '#f1f5f9', zeroline: false },
-      yaxis: { gridcolor: '#f1f5f9', zeroline: false }
+      margin: { t: 60, r: 40, b: 60, l: 70 },
+      font: { family: 'Inter, sans-serif', color: textColor },
+      xaxis: { 
+        gridcolor: gridColor, 
+        zeroline: false,
+        title: { font: { size: 12, color: textColor } },
+        tickfont: { size: 10, color: textColor }
+      },
+      yaxis: { 
+        gridcolor: gridColor, 
+        zeroline: false,
+        title: { font: { size: 12, color: textColor } },
+        tickfont: { size: 10, color: textColor }
+      },
+      title: {
+        font: { size: 16, color: titleColor, weight: 'bold' },
+        x: 0.05,
+        xanchor: 'left'
+      }
     };
 
     if (activeTab === 'histogram' && histogramRef.current) {
-      Plotly.newPlot(histogramRef.current, [{
-        x: data,
-        type: 'histogram',
-        nbinsx: 50,
-        marker: { color: 'rgba(99, 102, 241, 0.7)', line: { color: 'rgb(99, 102, 241)', width: 1 } },
-        name: 'Distribución IESTI'
-      }, {
-        x: [params.arfd, params.arfd],
-        y: [0, 1],
-        type: 'scatter',
-        mode: 'lines',
-        line: { color: '#ef4444', width: 3, dash: 'dash' },
-        name: 'ARfD',
-        yaxis: 'y2'
-      }], {
+      const mean = results.stats.mean;
+      const p95 = results.stats.p95;
+      
+      Plotly.newPlot(histogramRef.current, [
+        {
+          x: data,
+          type: 'histogram',
+          nbinsx: 60,
+          marker: { 
+            color: isDark ? 'rgba(129, 140, 248, 0.6)' : 'rgba(99, 102, 241, 0.6)', 
+            line: { color: isDark ? 'rgb(129, 140, 248)' : 'rgb(99, 102, 241)', width: 0.5 } 
+          },
+          name: t.histogram,
+          hovertemplate: '<b>IESTI:</b> %{x:.6f}<br><b>Frecuencia:</b> %{y}<extra></extra>'
+        },
+        // ARfD Line
+        {
+          x: [params.arfd, params.arfd],
+          y: [0, 1],
+          type: 'scatter',
+          mode: 'lines',
+          line: { color: '#ef4444', width: 3, dash: 'dash' },
+          name: 'ARfD',
+          yaxis: 'y2',
+          hoverinfo: 'none'
+        },
+        // Mean Line
+        {
+          x: [mean, mean],
+          y: [0, 1],
+          type: 'scatter',
+          mode: 'lines',
+          line: { color: isDark ? '#fbbf24' : '#d97706', width: 2, dash: 'dot' },
+          name: t.mean,
+          yaxis: 'y2',
+          hoverinfo: 'none'
+        }
+      ], {
         ...layoutBase,
-        title: 'Histograma de IESTI',
+        title: t.histogram,
         xaxis: { title: 'IESTI (mg/kg bw)', ...layoutBase.xaxis },
-        yaxis: { title: 'Frecuencia', ...layoutBase.yaxis },
-        yaxis2: { overlaying: 'y', side: 'right', showgrid: false, zeroline: false, showticklabels: false },
-        showlegend: false
-      }, { responsive: true });
+        yaxis: { title: t.simulations, ...layoutBase.yaxis },
+        yaxis2: { 
+          overlaying: 'y', 
+          side: 'right', 
+          showgrid: false, 
+          zeroline: false, 
+          showticklabels: false,
+          range: [0, 1]
+        },
+        showlegend: true,
+        legend: {
+          orientation: 'h',
+          y: -0.2,
+          x: 0.5,
+          xanchor: 'center',
+          font: { size: 10, color: textColor }
+        },
+        shapes: [
+          // Risk Zone Shading
+          {
+            type: 'rect',
+            xref: 'x',
+            yref: 'paper',
+            x0: params.arfd,
+            x1: Math.max(...data, params.arfd * 1.2),
+            y0: 0,
+            y1: 1,
+            fillcolor: 'rgba(239, 68, 68, 0.05)',
+            line: { width: 0 }
+          }
+        ],
+        annotations: [
+          {
+            x: params.arfd,
+            y: 1,
+            xref: 'x',
+            yref: 'paper',
+            text: 'ARfD',
+            showarrow: false,
+            font: { color: '#ef4444', size: 10, weight: 'bold' },
+            bgcolor: isDark ? 'rgba(15, 23, 42, 0.8)' : 'rgba(255, 255, 255, 0.8)',
+            bordercolor: '#ef4444',
+            borderwidth: 1,
+            borderpad: 4,
+            yanchor: 'bottom'
+          }
+        ]
+      }, { responsive: true, displayModeBar: false });
     }
 
     if (activeTab === 'cdf' && cdfRef.current) {
       const sorted = [...data].sort((a, b) => a - b);
       const p = sorted.map((_, i) => i / sorted.length);
-      Plotly.newPlot(cdfRef.current, [{
-        x: sorted,
-        y: p,
-        type: 'scatter',
-        mode: 'lines',
-        line: { color: '#6366f1', width: 3 },
-        fill: 'tozeroy',
-        fillcolor: 'rgba(99, 102, 241, 0.1)'
-      }, {
-        x: [params.arfd, params.arfd],
-        y: [0, 1],
-        type: 'scatter',
-        mode: 'lines',
-        line: { color: '#ef4444', width: 2, dash: 'dash' },
-        name: 'ARfD'
-      }], {
+      Plotly.newPlot(cdfRef.current, [
+        {
+          x: sorted,
+          y: p,
+          type: 'scatter',
+          mode: 'lines',
+          line: { color: isDark ? '#818cf8' : '#6366f1', width: 3 },
+          fill: 'tozeroy',
+          fillcolor: isDark ? 'rgba(129, 140, 248, 0.1)' : 'rgba(99, 102, 241, 0.1)',
+          name: t.cdf,
+          hovertemplate: '<b>IESTI:</b> %{x:.6f}<br><b>Probabilidad:</b> %{y:.4f}<extra></extra>'
+        },
+        {
+          x: [params.arfd, params.arfd],
+          y: [0, 1],
+          type: 'scatter',
+          mode: 'lines',
+          line: { color: '#ef4444', width: 2, dash: 'dash' },
+          name: 'ARfD',
+          hoverinfo: 'none'
+        }
+      ], {
         ...layoutBase,
-        title: 'Probabilidad Acumulada (CDF)',
+        title: t.cdf,
         xaxis: { title: 'IESTI (mg/kg bw)', ...layoutBase.xaxis },
-        yaxis: { title: 'Probabilidad', range: [0, 1.05], ...layoutBase.yaxis }
-      }, { responsive: true });
+        yaxis: { title: 'Probabilidad Acumulada', range: [0, 1.05], ...layoutBase.yaxis },
+        showlegend: true,
+        legend: {
+          orientation: 'h',
+          y: -0.2,
+          x: 0.5,
+          xanchor: 'center',
+          font: { size: 10, color: textColor }
+        }
+      }, { responsive: true, displayModeBar: false });
     }
 
     if (activeTab === 'boxplot' && boxplotRef.current) {
       Plotly.newPlot(boxplotRef.current, [{
         y: data,
         type: 'box',
-        name: 'Simulación',
-        marker: { color: '#6366f1' },
-        boxpoints: 'suspectedoutliers'
+        name: t.simulations,
+        marker: { color: isDark ? '#818cf8' : '#6366f1' },
+        boxpoints: 'suspectedoutliers',
+        fillcolor: isDark ? 'rgba(129, 140, 248, 0.3)' : 'rgba(99, 102, 241, 0.3)',
+        line: { width: 1.5 }
       }], {
         ...layoutBase,
-        title: 'Boxplot de Resultados',
-        yaxis: { title: 'IESTI (mg/kg bw)', ...layoutBase.yaxis }
-      }, { responsive: true });
+        title: t.boxplot,
+        yaxis: { title: 'IESTI (mg/kg bw)', ...layoutBase.yaxis },
+        xaxis: { showticklabels: false, ...layoutBase.xaxis }
+      }, { responsive: true, displayModeBar: false });
     }
 
     if (activeTab === 'sensitivity' && tornadoRef.current) {
@@ -499,14 +603,17 @@ const App: React.FC = () => {
         type: 'bar',
         orientation: 'h',
         marker: {
-          color: corr.map(c => c.value > 0 ? '#6366f1' : '#f43f5e')
-        }
+          color: corr.map(c => c.value > 0 ? (isDark ? '#818cf8' : '#6366f1') : (isDark ? '#f87171' : '#f43f5e')),
+          line: { width: 0 }
+        },
+        hovertemplate: '<b>Variable:</b> %{y}<br><b>Correlación:</b> %{x:.4f}<extra></extra>'
       }], {
         ...layoutBase,
-        title: 'Análisis de Sensibilidad (Correlación)',
+        title: t.sensitivity,
         xaxis: { title: 'Coeficiente de Correlación', range: [-1, 1], ...layoutBase.xaxis },
-        yaxis: { ...layoutBase.yaxis }
-      }, { responsive: true });
+        yaxis: { ...layoutBase.yaxis },
+        margin: { ...layoutBase.margin, l: 100 }
+      }, { responsive: true, displayModeBar: false });
     }
   };
 
