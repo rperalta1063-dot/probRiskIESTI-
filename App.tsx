@@ -1095,14 +1095,6 @@ const App: React.FC = () => {
           </div>
           <div className="flex gap-8">
             <a 
-              href="https://www.fao.org/3/y4544e/y4544e0j.htm" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-[10px] font-bold text-slate-400 dark:text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 uppercase tracking-widest transition-colors"
-            >
-              {t.documentation}
-            </a>
-            <a 
               href="https://www.fao.org/food-safety/scientific-advice/jmpr/en/" 
               target="_blank" 
               rel="noopener noreferrer"
@@ -1110,7 +1102,6 @@ const App: React.FC = () => {
             >
               {t.jmprRegulation}
             </a>
-            <a href="#" className="text-[10px] font-bold text-slate-400 dark:text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 uppercase tracking-widest transition-colors">{t.support}</a>
           </div>
           <p className="text-[10px] font-medium text-slate-300 dark:text-slate-600">{t.copyright}</p>
         </div>
