@@ -127,7 +127,19 @@ export const translations = {
     hrLabel: 'HR',
     bwLabel: 'bw',
     iestiLabel: 'IESTI',
-    sensitivityDef: 'Sensibilidad: Identifica qué variables (consumo, residuo, peso) tienen mayor impacto en el riesgo final.'
+    sensitivityDef: 'Sensibilidad: Identifica qué variables (consumo, residuo, peso) tienen mayor impacto en el riesgo final.',
+    tooltips: {
+      evalMethod: 'Determina si se usa un valor fijo (peor caso) o una simulación de Monte Carlo para considerar la variabilidad.',
+      simulations: 'Número de iteraciones para la simulación de Monte Carlo. Más iteraciones aumentan la precisión pero tardan más.',
+      population: 'Define los patrones de consumo y pesos corporales típicos para adultos o niños.',
+      calcModel: 'Selecciona la fórmula IESTI (Caso 1, 2a, 2b o 3) según el tipo de alimento y su peso unitario.',
+      arfd: 'Dosis de Referencia Aguda (mg/kg pc). Límite de seguridad para la ingesta en un solo día.',
+      lp: 'Gran Porción (g/día). Consumo máximo de alimento reportado para un día (percentil 97.5).',
+      ue: 'Peso de la unidad (g). Peso promedio de una unidad individual del alimento (ej. una manzana).',
+      v: 'Factor de variabilidad. Ajusta la posibilidad de que una unidad individual tenga residuos mucho más altos que el promedio.',
+      hr: 'Residuo Alto (mg/kg). El nivel máximo de residuo encontrado en ensayos de campo supervisados.',
+      bw: 'Peso Corporal (kg). El peso de la persona expuesta, usado para calcular la dosis relativa.',
+    }
   },
   en: {
     title: 'ProbRisk IESTI',
@@ -254,7 +266,19 @@ export const translations = {
     hrLabel: 'HR',
     bwLabel: 'bw',
     iestiLabel: 'IESTI',
-    sensitivityDef: 'Sensitivity: Identifies which variables (consumption, residue, weight) have the greatest impact on final risk.'
+    sensitivityDef: 'Sensitivity: Identifies which variables (consumption, residue, weight) have the greatest impact on final risk.',
+    tooltips: {
+      evalMethod: 'Determines whether a fixed value (worst case) or a Monte Carlo simulation is used to consider variability.',
+      simulations: 'Number of iterations for the Monte Carlo simulation. More iterations increase precision but take longer.',
+      population: 'Defines typical consumption patterns and body weights for adults or children.',
+      calcModel: 'Selects the IESTI formula (Case 1, 2a, 2b, or 3) based on the type of food and its unit weight.',
+      arfd: 'Acute Reference Dose (mg/kg bw). Safety limit for intake in a single day.',
+      lp: 'Large Portion (g/day). Maximum reported food consumption for one day (97.5th percentile).',
+      ue: 'Unit weight (g). Average weight of an individual unit of the food (e.g., an apple).',
+      v: 'Variability factor. Adjusts for the possibility that an individual unit has much higher residues than the average.',
+      hr: 'High Residue (mg/kg). The maximum residue level found in supervised field trials.',
+      bw: 'Body Weight (kg). The weight of the exposed person, used to calculate the relative dose.',
+    }
   },
   fr: {
     title: 'ProbRisk IESTI',
@@ -381,6 +405,18 @@ export const translations = {
     hrLabel: 'HR',
     bwLabel: 'bw',
     iestiLabel: 'IESTI',
-    sensitivityDef: 'Sensibilité : Identifie quelles variables (consommation, résidu, poids) ont le plus d\'impact sur le risque final.'
+    sensitivityDef: 'Sensibilité : Identifie quelles variables (consommation, résidu, poids) ont le plus d\'impact sur le risque final.',
+    tooltips: {
+      evalMethod: 'Détermine si une valeur fixe (pire cas) ou une simulation de Monte Carlo est utilisée pour considérer la variabilité.',
+      simulations: 'Nombre d\'itérations pour la simulation de Monte Carlo. Plus d\'itérations augmentent la précision mais prennent plus de temps.',
+      population: 'Définit les modes de consommation et les poids corporels typiques pour les adultes ou les enfants.',
+      calcModel: 'Sélectionne la formule IESTI (Cas 1, 2a, 2b ou 3) en fonction du type d\'aliment et de son poids unitaire.',
+      arfd: 'Dose de Référence Aiguë (mg/kg pc). Limite de sécurité pour l\'ingestion en une seule journée.',
+      lp: 'Grande Portion (g/jour). Consommation alimentaire maximale rapportée pour un jour (97,5e percentile).',
+      ue: 'Poids unitaire (g). Poids moyen d\'une unité individuelle de l\'aliment (ex. une pomme).',
+      v: 'Facteur de variabilité. Ajuste la possibilité qu\'une unité individuelle ait des résidus beaucoup plus élevés que la moyenne.',
+      hr: 'Résidu élevé (mg/kg). Le niveau de résidu maximal trouvé lors d\'essais au champ supervisés.',
+      bw: 'Poids corporel (kg). Le poids de la personne exposée, utilisé pour calculer la dose relative.',
+    }
   }
 };

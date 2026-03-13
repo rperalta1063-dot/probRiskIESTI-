@@ -48,12 +48,28 @@ declare const Plotly: any;
 
 interface VariableInputProps {
   label: string;
+  tooltip: string;
   params: DistributionParams;
   onChange: (newParams: DistributionParams) => void;
   t: any;
 }
 
-const VariableInput: React.FC<VariableInputProps> = ({ label, params, onChange, t }) => {
+const TooltipLabel = ({ label, tooltip }: { label: string; tooltip: string }) => (
+  <div className="flex items-center gap-1.5 group relative">
+    <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase ml-1 cursor-help">
+      {label}
+    </label>
+    <div className="p-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400 group-hover:text-indigo-500 transition-colors cursor-help">
+      <Info className="w-2.5 h-2.5" />
+    </div>
+    <div className="absolute bottom-full left-0 mb-2 w-56 p-2.5 bg-slate-800 dark:bg-slate-700 text-[10px] text-white rounded-xl opacity-0 group-hover:opacity-100 pointer-events-none transition-all transform translate-y-2 group-hover:translate-y-0 z-50 shadow-2xl border border-slate-700 dark:border-slate-600 leading-relaxed">
+      {tooltip}
+      <div className="absolute top-full left-4 border-8 border-transparent border-t-slate-800 dark:border-t-slate-700"></div>
+    </div>
+  </div>
+);
+
+const VariableInput: React.FC<VariableInputProps> = ({ label, tooltip, params, onChange, t }) => {
   const updateParam = (key: keyof DistributionParams, value: any) => {
     onChange({ ...params, [key]: value });
   };
@@ -61,7 +77,7 @@ const VariableInput: React.FC<VariableInputProps> = ({ label, params, onChange, 
   return (
     <section className="bg-slate-50/50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-100 dark:border-slate-700">
       <div className="flex justify-between items-center mb-3">
-        <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-tight">{label}</label>
+        <TooltipLabel label={label} tooltip={tooltip} />
         <select 
           className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 bg-white dark:bg-slate-800 border border-indigo-100 dark:border-indigo-900 px-2 py-1 rounded-md outline-none cursor-pointer"
           value={params.type}
@@ -710,7 +726,7 @@ const App: React.FC = () => {
               </div>
               <div className="p-5 space-y-4">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase ml-1">{t.evalMethod}</label>
+                  <TooltipLabel label={t.evalMethod} tooltip={t.tooltips.evalMethod} />
                   <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
                     <button 
                       onClick={setGlobalDeterministic}
@@ -731,7 +747,7 @@ const App: React.FC = () => {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase ml-1">{t.simulations}</label>
+                    <TooltipLabel label={t.simulations} tooltip={t.tooltips.simulations} />
                     <input 
                       type="number"
                       disabled={params.mode === 'deterministic'}
@@ -741,7 +757,7 @@ const App: React.FC = () => {
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase ml-1">{t.population}</label>
+                    <TooltipLabel label={t.population} tooltip={t.tooltips.population} />
                     <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
                       <button 
                         onClick={() => setPopulation('adult')}
@@ -756,7 +772,7 @@ const App: React.FC = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase ml-1">{t.calcModel}</label>
+                  <TooltipLabel label={t.calcModel} tooltip={t.tooltips.calcModel} />
                   <div className="grid grid-cols-2 gap-2">
                     {[
                       { id: Iesticase.CASE_1, label: t.case1, desc: t.case1Desc },
@@ -808,7 +824,7 @@ const App: React.FC = () => {
 
                     <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-100 dark:border-slate-700 space-y-3">
                       <div className="flex justify-between items-center">
-                        <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-tight">{t.arfdLabel}</span>
+                        <TooltipLabel label={t.arfdLabel} tooltip={t.tooltips.arfd} />
                         <input 
                           type="number" step="any"
                           className="w-24 p-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-right text-sm font-bold text-indigo-600 dark:text-indigo-400 outline-none font-mono"
@@ -861,6 +877,7 @@ const App: React.FC = () => {
 
                     <VariableInput 
                       label={t.consumptionLP} 
+                      tooltip={t.tooltips.lp}
                       params={params.lp_dist}
                       onChange={(lp) => setParams({ ...params, lp_dist: lp })}
                       t={t}
@@ -871,7 +888,7 @@ const App: React.FC = () => {
                         <h3 className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase">{t.case2Params}</h3>
                         <div className="grid grid-cols-2 gap-4">
                           <div className="space-y-1">
-                            <span className="text-[9px] text-indigo-400 dark:text-indigo-500 font-bold uppercase">{t.ueLabel}</span>
+                            <TooltipLabel label={t.ueLabel} tooltip={t.tooltips.ue} />
                             <input 
                               type="number"
                               className="w-full p-2 bg-white dark:bg-slate-900 border border-indigo-100 dark:border-indigo-900 rounded-lg text-sm outline-none font-mono dark:text-slate-200"
@@ -880,7 +897,7 @@ const App: React.FC = () => {
                             />
                           </div>
                           <div className="space-y-1">
-                            <span className="text-[9px] text-indigo-400 dark:text-indigo-500 font-bold uppercase">{t.vFactor}</span>
+                            <TooltipLabel label={t.vFactor} tooltip={t.tooltips.v} />
                             <input 
                               type="number"
                               className="w-full p-2 bg-white dark:bg-slate-900 border border-indigo-100 dark:border-indigo-900 rounded-lg text-sm outline-none font-mono dark:text-slate-200"
@@ -900,12 +917,14 @@ const App: React.FC = () => {
             <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-5 space-y-6">
               <VariableInput 
                 label={params.caseType === Iesticase.CASE_3 ? t.residueSTMRP : t.residueHR} 
+                tooltip={t.tooltips.hr}
                 params={params.hr_dist}
                 onChange={(hr) => setParams({ ...params, hr_dist: hr })}
                 t={t}
               />
               <VariableInput 
                 label={t.bodyWeight} 
+                tooltip={t.tooltips.bw}
                 params={params.bw_dist}
                 onChange={(bw) => setParams({ ...params, bw_dist: bw })}
                 t={t}
