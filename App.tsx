@@ -23,6 +23,7 @@ import {
   ShieldCheck,
   MousePointer2,
   Calculator,
+  BookOpen,
   Image as ImageIcon,
   Sun,
   Moon
@@ -208,7 +209,7 @@ const App: React.FC = () => {
   
   const [results, setResults] = useState<SimulationResult | null>(null);
   const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<'histogram' | 'cdf' | 'boxplot' | 'sensitivity' | 'data'>('histogram');
+  const [activeTab, setActiveTab] = useState<'histogram' | 'cdf' | 'boxplot' | 'sensitivity' | 'data' | 'manual'>('histogram');
 
   const histogramRef = useRef<HTMLDivElement>(null);
   const cdfRef = useRef<HTMLDivElement>(null);
@@ -660,6 +661,22 @@ const App: React.FC = () => {
               <button onClick={() => setLanguage('fr')} className={`px-2 py-1 text-[10px] font-bold rounded ${language === 'fr' ? 'bg-white dark:bg-slate-700 text-indigo-600 shadow-sm' : 'text-slate-400'}`}>FR</button>
             </div>
             <button 
+              onClick={() => {
+                if (!results) {
+                  setResults({
+                    stats: { mean: 0, p95: 0, p975: 0, p99: 0, probExceed: 0, min: 0, max: 0, std: 0 },
+                    data: [],
+                    sensitivity: []
+                  });
+                }
+                setActiveTab('manual');
+              }}
+              className="p-2 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+              title={t.userManual}
+            >
+              <BookOpen className="w-5 h-5" />
+            </button>
+            <button 
               onClick={() => setDarkMode(!darkMode)}
               className="p-2 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
             >
@@ -905,6 +922,21 @@ const App: React.FC = () => {
                 </div>
                 <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2">{t.readyForAnalysis}</h3>
                 <p className="text-slate-400 dark:text-slate-500 max-w-sm mb-8">{t.adjustParams}</p>
+                <div className="flex gap-4 mb-12">
+                  <button 
+                    onClick={() => {
+                      setResults({
+                        stats: { mean: 0, p95: 0, p975: 0, p99: 0, probExceed: 0, min: 0, max: 0, std: 0 },
+                        data: [],
+                        sensitivity: []
+                      });
+                      setActiveTab('manual');
+                    }}
+                    className="flex items-center gap-2 px-6 py-2 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-bold rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-all uppercase tracking-wider"
+                  >
+                    <BookOpen className="w-4 h-4" /> {t.userManual}
+                  </button>
+                </div>
                 <div className="grid grid-cols-3 gap-6 w-full max-w-lg">
                   <div className="p-4 bg-slate-50/50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800">
                     <MousePointer2 className="w-5 h-5 text-indigo-400 mx-auto mb-2" />
@@ -961,7 +993,7 @@ const App: React.FC = () => {
                           key={tab.id}
                           disabled={params.mode === 'deterministic' && (tab.id === 'histogram' || tab.id === 'cdf' || tab.id === 'boxplot' || tab.id === 'sensitivity')}
                           onClick={() => setActiveTab(tab.id as any)}
-                          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-[10px] font-bold uppercase transition-all ${activeTab === tab.id ? 'bg-indigo-600 text-white shadow-md shadow-indigo-100 dark:shadow-indigo-900/20' : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'} ${params.mode === 'deterministic' && (tab.id !== 'data') ? 'opacity-30 cursor-not-allowed' : ''}`}
+                          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-[10px] font-bold uppercase transition-all ${activeTab === tab.id ? 'bg-indigo-600 text-white shadow-md shadow-indigo-100 dark:shadow-indigo-900/20' : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'} ${params.mode === 'deterministic' && (tab.id !== 'data' && tab.id !== 'manual') ? 'opacity-30 cursor-not-allowed' : ''}`}
                         >
                           {tab.icon}
                           <span className="hidden sm:inline">{tab.label}</span>
@@ -991,7 +1023,7 @@ const App: React.FC = () => {
                   </div>
 
                   <div className="p-6">
-                    {params.mode === 'deterministic' && activeTab !== 'data' ? (
+                    {params.mode === 'deterministic' && activeTab !== 'data' && activeTab !== 'manual' ? (
                       <div className="h-[450px] flex flex-col items-center justify-center text-center space-y-4">
                         <div className="w-16 h-16 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center justify-center">
                           <MousePointer2 className="w-8 h-8 text-slate-300 dark:text-slate-600" />
@@ -1008,6 +1040,47 @@ const App: React.FC = () => {
                         {activeTab === 'boxplot' && <div ref={boxplotRef} className="h-[450px] w-full" />}
                         {activeTab === 'sensitivity' && <div ref={tornadoRef} className="h-[450px] w-full" />}
                         
+                        {activeTab === 'manual' && (
+                          <div className="min-h-[450px] space-y-8 animate-in fade-in duration-500 overflow-y-auto max-h-[500px] pr-2">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                              <div className="space-y-4">
+                                <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400">
+                                  <Play className="w-4 h-4" />
+                                  <h3 className="text-sm font-bold uppercase tracking-tight">{t.howToUse}</h3>
+                                </div>
+                                <div className="space-y-3">
+                                  {[t.step1, t.step2, t.step3, t.step4].map((step, i) => (
+                                    <div key={i} className="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                                      {step}
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                              
+                              <div className="space-y-4">
+                                <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400">
+                                  <Info className="w-4 h-4" />
+                                  <h3 className="text-sm font-bold uppercase tracking-tight">{t.interpretationTitle}</h3>
+                                </div>
+                                <div className="space-y-3">
+                                  {[
+                                    { title: 'IESTI', text: t.iestiDef },
+                                    { title: 'ARfD', text: t.arfdDef },
+                                    { title: 'RISK', text: t.riskCriteria },
+                                    { title: 'PROB', text: t.probExceedDef },
+                                    { title: 'SENS', text: t.sensitivityDef }
+                                  ].map((item, i) => (
+                                    <div key={i} className="p-3 bg-indigo-50/30 dark:bg-indigo-900/10 rounded-xl border border-indigo-100/50 dark:border-indigo-900/30">
+                                      <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 block mb-1 uppercase">{item.title}</span>
+                                      <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">{item.text}</p>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
                         {activeTab === 'data' && (
                           <div className="overflow-auto max-h-[450px] rounded-xl border border-slate-100 dark:border-slate-800">
                             <table className="w-full text-left border-collapse">
